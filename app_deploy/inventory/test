@@ -1,0 +1,5 @@
+[testing]
+test_server1 ansible_user=admin
+
+[testing:vars]
+app_port=9090

@@ -1,0 +1,6 @@
+---
+- name: Ensure Windows Time Service is running
+  win_service:
+    name: "w32time"
+    start_mode: auto
+    state: started

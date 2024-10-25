@@ -1,0 +1,13 @@
+---
+- name: Install and configure Microsoft SQL Server
+  win_package:
+    path: C:\path\to\sql_installer.exe
+    arguments: "/QUIET /IACCEPTSQLSERVERLICENSETERMS /INSTANCENAME={{ instance_name }} /SECURITYMODE=SQL /SAPWD={{ sa_password }}"
+    product_id: "SQLSERVER"
+    state: present
+
+- name: Start SQL Server Service
+  win_service:
+    name: "MSSQLSERVER"
+    start_mode: auto
+    state: started

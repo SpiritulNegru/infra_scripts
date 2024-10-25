@@ -1,0 +1,48 @@
+---
+- name: Deploy a new VM in VMware
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - vars/vmware_secrets.yml 
+  tasks:
+    - name: Create a new VM
+      community.vmware.vmware_guest:
+        hostname: "vcenter.local"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "Datacenter"
+        cluster: "Cluster"
+        folder: "/Datacenter/vm"
+        name: "New_VM"
+        template: "Template_VM"  
+        state: poweredon
+        hardware:
+          memory_mb: 4096
+          num_cpus: 4
+          memory_reservation: 2048  
+          cpu_reservation: 2000     
+          scsi: paravirtual
+
+        networks:
+          - name: "VM Network"
+            device_type: vmxnet3
+        disks:
+          - size_gb: 20
+            type: thin
+            datastore: "Datastore"
+        guest_id: "ubuntu64Guest" 
+        wait_for_ip_address: yes
+
+    - name: Wait for the VM to boot and get an IP address
+      community.vmware.vmware_guest_info:
+        hostname: "vcenter.local"
+        username: "administrator@vsphere.local"
+        password: "password"
+        validate_certs: no
+        name: "New_VM"
+      register: vm_info
+
+    - name: Show the VM IP address
+      debug:
+        msg: "The VM IP address is: {{ vm_info.instance.ip_address }}"

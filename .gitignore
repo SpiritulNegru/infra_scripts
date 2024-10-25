@@ -1,0 +1,11 @@
+# .gitignore
+
+# Ignore inventory files with secrets
+inventory.ini
+
+# Ignore unencrypted vault files
+vault.yml
+
+# Ignore other sensitive files
+*.secrets
+*.key

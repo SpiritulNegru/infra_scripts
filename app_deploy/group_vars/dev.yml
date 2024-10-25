@@ -1,0 +1,3 @@
+app_name: "app_dev"
+app_path: "C:/apps/dev/app"
+db_url: "dev_db_url"

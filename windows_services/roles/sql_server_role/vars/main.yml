@@ -1,0 +1,3 @@
+---
+instance_name: "SQLInstance"
+sa_password: "your_sa_password"

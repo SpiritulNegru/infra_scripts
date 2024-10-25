@@ -1,0 +1,36 @@
+---
+- name: Copy environment-specific configuration file
+  win_copy:
+    src: "configs/{{ ansible_hostname }}.config"
+    dest: "{{ app_path }}/config/app.config"
+
+- name: Create application directory
+  win_file:
+    path: "{{ app_path }}"
+    state: directory
+
+- name: Copy application files
+  win_copy:
+    src: "/path/to/app.zip"
+    dest: "{{ app_path }}/app.zip"
+
+- name: Extract application files
+  win_unzip:
+    src: "{{ app_path }}/app.zip"
+    dest: "{{ app_path }}"
+    creates: "{{ app_path }}/index.html"
+
+- name: Configure the application service
+  win_service:
+    name: "{{ app_name }}"
+    display_name: "Sample App Service"
+    path: "{{ app_path }}/app_service.exe"
+    start_mode: auto
+    state: started
+
+- name: Ensure the application is running on the correct port
+  win_firewall_rule:
+    name: "Allow traffic to {{ app_name }}"
+    localport: "{{ app_port }}"
+    action: allow
+    protocol: TCP

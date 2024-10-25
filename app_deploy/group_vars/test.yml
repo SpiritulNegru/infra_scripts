@@ -1,0 +1,3 @@
+app_name: "app_test"
+app_path: "C:/apps/test/app"
+db_url: "test_db_url"

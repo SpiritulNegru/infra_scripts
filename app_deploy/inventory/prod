@@ -1,0 +1,5 @@
+[production]
+prod_server1 ansible_user=admin
+
+[production:vars]
+app_port=80

@@ -1,0 +1,5 @@
+development]
+dev_server1 ansible_user=admin
+
+[development:vars]
+app_port=8080

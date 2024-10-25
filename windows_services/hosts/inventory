@@ -1,0 +1,10 @@
+[windows_servers]
+win_server1
+win_server2
+
+[windows_servers:vars]
+ansible_user=admin
+ansible_password={{ ansible_pass }}
+ansible_connection=winrm
+ansible_winrm_transport=ntlm
+ansible_winrm_server_cert_validation=ignorec

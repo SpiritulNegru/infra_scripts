@@ -1,0 +1,49 @@
+---
+- name: Deploy and manage Kaspersky Antivirus on Windows
+  hosts: windows_servers
+  gather_facts: no
+  tasks:
+    - name: Copy Kaspersky Installer to Windows machine
+      win_copy:
+        src: /path/to/kaspersky.msi
+        dest: C:\temp\kaspersky.msi
+
+    - name: Install Kaspersky Antivirus
+      win_package:
+        path: C:\temp\kaspersky.msi
+        product_id: "{{ lookup('win_package', 'Kaspersky') }}"
+        state: present
+        arguments: /quiet /norestart
+      register: install_status
+
+    - name: Disable Windows Defender to prevent conflict with Kaspersky
+      win_feature:
+        name: Windows-Defender-Features
+        state: absent
+      when: install_status.changed == true
+
+    - name: Ensure Kaspersky Antivirus Service is Running
+      win_service:
+        name: KESL
+        start_mode: auto
+        state: started
+      register: kaspersky_service_status
+
+    - name: Check Kaspersky antivirus signature update status
+      win_shell: |
+        Get-WmiObject -Namespace "root\SecurityCenter2" -Class AntiVirusProduct |
+        Where-Object {$_.displayName -like "*Kaspersky*"} |
+        Select-Object displayName, productState, timestamp, pathToSignedProductExe
+      register: av_status
+
+    - name: Alert if Kaspersky service is not running
+      win_shell: |
+        if ($kaspersky_service_status.state -ne 'running') {
+          Send-MailMessage -SmtpServer 'smtp.yourserver.com' -From 'alerts@yourdomain.com' -To 'admin@yourdomain.com' -Subject 'Kaspersky Service Alert' -Body 'Kaspersky service is not running on {{ ansible_hostname }}'
+        }
+      when: kaspersky_service_status.state != 'running'
+
+    - name: Clean up installation files
+      win_file:
+        path: C:\temp\kaspersky.msi
+        state: absent

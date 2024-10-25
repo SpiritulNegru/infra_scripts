@@ -1,0 +1,21 @@
+---
+- name: Install and manage services based on user input
+  hosts: windows_servers
+  gather_facts: no
+  vars_files:
+    - vault.yml
+  vars_prompt:
+    - name: "selected_service"
+      prompt: "Which service do you want to manage? (1: SQL Server, 2: Windows Time Service)"
+      private: no
+
+  tasks:
+    - name: Run SQL Server role if user selects SQL Server
+      include_role:
+        name: sql_server_role
+      when: selected_service == "1"
+
+    - name: Run Windows Time Service role if user selects Windows Time Service
+      include_role:
+        name: w32time_role
+      when: selected_service == "2"
